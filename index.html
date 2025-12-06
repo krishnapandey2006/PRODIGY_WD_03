@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Ultimate Tic-Tac-Toe • PRODIGY_WD_03 • Krishna Pandey</title>
+  <meta name="description" content="Ultimate Tic-Tac-Toe with AI (minimax), score tracking, animations, and sound effects - Prodigy InfoTech Task 03"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <main class="container" role="main">
+    <header class="top">
+      <h1>Ultimate Tic-Tac-Toe</h1>
+      <p class="sub">Task 03 — Prodigy InfoTech Web Dev Internship • Play vs Human or AI</p>
+    </header>
+
+    <section class="controls" aria-label="game controls">
+      <div class="mode">
+        <label><input type="radio" name="mode" value="human" checked> 2-Player</label>
+        <label><input type="radio" name="mode" value="ai"> vs AI</label>
+      </div>
+
+      <div class="difficulty" id="difficultyWrap" aria-hidden="true">
+        <label>Difficulty:
+          <select id="difficulty">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard" selected>Hard</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="player-choice">
+        <label>Play as:
+          <select id="playerSymbol">
+            <option value="X">X</option>
+            <option value="O">O</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="buttons">
+        <button id="newGame" class="btn primary">New Game</button>
+        <button id="resetScore" class="btn">Reset Score</button>
+      </div>
+      
+      <div class="settings">
+        <button id="soundToggle" class="btn sound-btn">🔊 Sound On</button>
+        <button id="themeToggle" class="btn theme-btn">🌙 Dark Mode</button>
+      </div>
+    </section>
+
+    <section class="board-wrap" aria-label="game board">
+      <div id="board" class="board" role="grid" aria-live="polite">
+        <!-- 9 cells injected by JS -->
+      </div>
+
+      <div class="status" id="status" role="status">Turn: <span id="turn">X</span></div>
+      
+      <div class="move-history" id="moveHistory">
+        <h3>Move History</h3>
+        <div id="historyList"></div>
+      </div>
+    </section>
+
+    <section class="scoreboard" aria-label="scoreboard">
+      <h2>Score</h2>
+      <div class="scores">
+        <div class="score"><strong id="youScore">0</strong><span>You</span></div>
+        <div class="score"><strong id="aiScore">0</strong><span>AI / Player 2</span></div>
+        <div class="score"><strong id="drawScore">0</strong><span>Draws</span></div>
+      </div>
+      
+      <div class="stats">
+        <div class="stat">
+          <span>Games Played:</span>
+          <strong id="gamesPlayed">0</strong>
+        </div>
+        <div class="stat">
+          <span>Win Rate:</span>
+          <strong id="winRate">0%</strong>
+        </div>
+      </div>
+    </section>
+
+    <footer class="links">
+      <a class="link" href="https://github.com/krishnapandey2006/PRODIGY_WD_03" target="_blank" rel="noopener">View Source</a>
+      <a class="link" href="https://krishnapandey2006.github.io/PRODIGY_WD_03/" target="_blank" rel="noopener">Live Demo</a>
+    </footer>
+  </main>
+
+  <!-- Audio elements for sound effects -->
+  <audio id="placeSound" preload="auto">
+    <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+  </audio>
+  <audio id="winSound" preload="auto">
+    <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+  </audio>
+  <audio id="drawSound" preload="auto">
+    <source src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
